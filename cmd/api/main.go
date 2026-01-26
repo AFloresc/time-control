@@ -1,17 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"time-control/internal/auth"
 	"time-control/internal/database"
 	"time-control/internal/router"
 	"time-control/internal/sessions"
 	"time-control/internal/users"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	godotenv.Load("../../.env")
+	fmt.Println("len creds:", len(os.Getenv("FIREBASE_CREDENTIALS")))
+	fmt.Println("ENV loaded:", os.Getenv("FIREBASE_CREDENTIALS") != "")
+
 	db, err := database.Connect()
 	if err != nil {
 		log.Fatal(err)

@@ -19,7 +19,7 @@ func InitFirebase() {
 		log.Fatal("FIREBASE_CREDENTIALS env var is missing")
 	}
 
-	opt := option.WithCredentialsJSON([]byte(creds))
+	opt := option.WithAuthCredentialsJSON(option.ServiceAccount, []byte(creds))
 
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
