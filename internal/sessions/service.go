@@ -72,3 +72,24 @@ func (s *Service) GetUserSessions(userID string) ([]WorkSession, error) {
 func (s *Service) GetSessionsForAdmin(userID string) ([]WorkSession, error) {
 	return s.repo.GetByUser(userID)
 }
+
+func (s *Service) EndSession(userID string) (*WorkSession, error) {
+	// Buscar sesión abierta
+	session, err := s.repo.GetOpenSession(userID)
+	if err != nil {
+		return nil, ErrNoOpenSession
+	}
+
+	now := time.Now()
+
+	// Cerrar sesión en DB
+	if err := s.repo.CloseSession(session.ID, now); err != nil {
+		return nil, err
+	}
+
+	// Actualizar struct en memoria para devolverlo completo
+	session.EndTime = &now
+	session.ClosedAt = &now
+
+	return session, nil
+}
