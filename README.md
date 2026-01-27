@@ -287,7 +287,7 @@ Puedes obtener el token desde tu frontend o desde Firebase Auth.
 
 ---
 
-## 📘 Diagrama de arquitectura
+## Diagrama de arquitectura 📘
 
 Detalles de la arquitectura.
 
