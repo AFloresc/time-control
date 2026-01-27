@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -58,7 +59,14 @@ func FirebaseAuthMiddleware(userRepo *users.Repository, app *firebase.App) func(
 					Name:  email,
 					Role:  "user",
 				}
-				userRepo.Create(user)
+				fmt.Println("UID:", uid)
+				fmt.Println("Email:", email)
+				fmt.Println("User before create:", user)
+
+				if err := userRepo.Create(user); err != nil {
+					http.Error(w, "failed to create user", http.StatusInternalServerError)
+					return
+				}
 			}
 
 			ctx := context.WithValue(r.Context(), ContextUserID, user.ID)

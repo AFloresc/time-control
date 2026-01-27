@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"time-control/internal/auth"
 )
 
 type Handler struct {
@@ -20,8 +21,20 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service}
 }
 
+func getUserID(r *http.Request, w http.ResponseWriter) (string, bool) {
+	uid, ok := r.Context().Value(auth.ContextUserID).(string)
+	if !ok || uid == "" {
+		http.Error(w, "missing userID in context", http.StatusUnauthorized)
+		return "", false
+	}
+	return uid, true
+}
+
 func (h *Handler) StartSession(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
 
 	session, err := h.service.StartSession(userID)
 	if err != nil {
@@ -33,7 +46,10 @@ func (h *Handler) StartSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) EndSession(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
 
 	session, err := h.service.EndSession(userID)
 	if err != nil {
@@ -45,7 +61,10 @@ func (h *Handler) EndSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) CreateManualSession(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
 
 	var req manualSessionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -81,7 +100,10 @@ func (h *Handler) CreateManualSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetMySessions(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
 
 	sessions, err := h.service.GetUserSessions(userID)
 	if err != nil {

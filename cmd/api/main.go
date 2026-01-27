@@ -27,7 +27,10 @@ func main() {
 	}
 
 	// Migraciones
-	db.AutoMigrate(&sessions.WorkSession{})
+	db.AutoMigrate(
+		&users.User{},
+		&sessions.WorkSession{},
+	)
 
 	auth.InitFirebase()
 
