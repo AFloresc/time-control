@@ -97,3 +97,10 @@ func (s *Service) EndSession(userID string) (*WorkSession, error) {
 func (s *Service) GetAllSessions() ([]WorkSession, error) {
 	return s.repo.GetAllSessions()
 }
+
+func (s *Service) GetAdminSessions(userID string) ([]WorkSession, error) {
+	if userID != "" {
+		return s.repo.GetSessionsByUser(userID)
+	}
+	return s.repo.GetAllSessions()
+}

@@ -34,3 +34,15 @@ func (h *Handler) GetAllSessions(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(sessions)
 }
+
+func (h *Handler) GetSessions(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("user_id")
+
+	sessions, err := h.sessionsService.GetAdminSessions(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(sessions)
+}

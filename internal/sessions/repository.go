@@ -41,3 +41,19 @@ func (r *Repository) GetByUser(userID string) ([]WorkSession, error) {
 	err := r.db.Where("user_id = ?", userID).Order("date desc").Find(&sessions).Error
 	return sessions, err
 }
+
+func (r *Repository) GetAllSessions() ([]WorkSession, error) {
+	var sessions []WorkSession
+	if err := r.db.Order("start_time DESC").Find(&sessions).Error; err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func (r *Repository) GetSessionsByUser(userID string) ([]WorkSession, error) {
+	var sessions []WorkSession
+	if err := r.db.Where("user_id = ?", userID).Order("start_time DESC").Find(&sessions).Error; err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}

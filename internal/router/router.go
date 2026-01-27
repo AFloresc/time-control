@@ -34,7 +34,7 @@ func NewRouter(sessionHandler *sessions.Handler, userRepo *users.Repository, fir
 	adminRouter.Use(auth.RequireAdmin)
 
 	adminRouter.HandleFunc("/ping", adminHandler.Ping).Methods("GET")
-	adminRouter.HandleFunc("/sessions", adminHandler.GetAllSessions).Methods("GET")
+	adminRouter.HandleFunc("/sessions", adminHandler.GetSessions).Methods("GET")
 
 	return r
 }
