@@ -90,9 +90,9 @@ El middleware:
 3. Crea el usuario en SQLite si no existe
 4. Inserta en el contexto:
 
-  -- **userID**
-  -- **email**
-  -- **role**
+- **userID**
+- **email**
+- **role**
 
 ---
 
@@ -276,14 +276,14 @@ Puedes obtener el token desde tu frontend o desde Firebase Auth.
 
 ## 🎉 Estado actual del proyecto
 
-✔ Autenticación Firebase
-✔ Creación automática de usuarios
-✔ Roles (**user**, **admin**)
-✔ Middleware de admin
-✔ CRUD de sesiones (solo lectura para admin)
-✔ Filtro por usuario
-✔ Base de datos SQLite funcionando
-✔ Rutas protegidas y organizadas
+- ✔ Autenticación Firebase
+- ✔ Creación automática de usuarios
+- ✔ Roles (**user**, **admin**)
+- ✔ Middleware de admin
+- ✔ CRUD de sesiones (solo lectura para admin)
+- ✔ Filtro por usuario
+- ✔ Base de datos SQLite funcionando
+- ✔ Rutas protegidas y organizadas
 
 ---
 
