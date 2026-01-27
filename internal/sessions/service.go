@@ -93,3 +93,7 @@ func (s *Service) EndSession(userID string) (*WorkSession, error) {
 
 	return session, nil
 }
+
+func (s *Service) GetAllSessions() ([]WorkSession, error) {
+	return s.repo.GetAllSessions()
+}

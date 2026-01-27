@@ -77,3 +77,14 @@ func FirebaseAuthMiddleware(userRepo *users.Repository, app *firebase.App) func(
 		})
 	}
 }
+
+func RequireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		role, _ := r.Context().Value(ContextRole).(string)
+		if role != "admin" {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}

@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"time-control/internal/admin"
 	"time-control/internal/auth"
 	"time-control/internal/sessions"
 	"time-control/internal/users"
@@ -24,6 +25,16 @@ func NewRouter(sessionHandler *sessions.Handler, userRepo *users.Repository, fir
 	sessionsRouter.HandleFunc("/end", sessionHandler.EndSession).Methods("POST")
 	sessionsRouter.HandleFunc("/manual", sessionHandler.CreateManualSession).Methods("POST")
 	sessionsRouter.HandleFunc("", sessionHandler.GetMySessions).Methods("GET")
+
+	// Rutas de administración
+	adminHandler := admin.NewHandler()
+
+	adminRouter := r.PathPrefix("/admin").Subrouter()
+	adminRouter.Use(auth.FirebaseAuthMiddleware(userRepo, firebaseApp))
+	adminRouter.Use(auth.RequireAdmin)
+
+	adminRouter.HandleFunc("/ping", adminHandler.Ping).Methods("GET")
+	adminRouter.HandleFunc("/sessions", adminHandler.GetAllSessions).Methods("GET")
 
 	return r
 }

@@ -113,3 +113,13 @@ func (h *Handler) GetMySessions(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(sessions)
 }
+
+func (h *Handler) GetAllSessions(w http.ResponseWriter, r *http.Request) {
+	sessions, err := h.sessions.GetAllSessions()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(sessions)
+}
