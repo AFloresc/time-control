@@ -287,6 +287,36 @@ Puedes obtener el token desde tu frontend o desde Firebase Auth.
 
 ---
 
+## 📘 Diagrama de arquitectura
+
+```Mermaid
+flowchart TD
+    A[📁 Estructura del Proyecto] --> B[Backend (Go)]
+    A --> C[Frontend (React + MUI)]
+    A --> D[Infraestructura]
+
+    B --> B1[Handlers]
+    B --> B2[Services]
+    B --> B3[Repositories]
+    B --> B4[Models]
+    B --> B5[Middleware]
+    B --> B6[Database (SQLite/MySQL)]
+    B --> B7[Auth (Firebase)]
+
+    C --> C1[Páginas]
+    C --> C2[Componentes]
+    C --> C3[Hooks]
+    C --> C4[Contextos]
+    C --> C5[i18n]
+
+    D --> D1[Docker]
+    D --> D2[Env Vars]
+    D --> D3[Seeds & Reset Scripts]
+    D --> D4[CI/CD futuro]
+```
+
+---
+
 ## 📌 Próximos pasos (TODO list)
 
 - Filtros por fecha (from, to)
