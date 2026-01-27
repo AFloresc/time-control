@@ -289,7 +289,7 @@ Puedes obtener el token desde tu frontend o desde Firebase Auth.
 
 ## 📘 Diagrama de arquitectura
 
-```Mermaid
+```mermaid
 flowchart TD
     A[📁 Estructura del Proyecto] --> B[Backend (Go)]
     A --> C[Frontend (React + MUI)]
