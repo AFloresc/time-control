@@ -1,1 +1,6 @@
 .env
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
