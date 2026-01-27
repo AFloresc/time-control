@@ -58,7 +58,7 @@ time-control/
 ├── data/               ← SQLite DB aquí (no en git)
 │   └── .gitignore
 │
-├── time-contro-frontend/  ← Ract + Vite frontend 
+├── time-control-frontend/  ← Ract + Vite frontend 
 │
 ├── go.mod
 └── go.sum
