@@ -292,7 +292,7 @@ Puedes obtener el token desde tu frontend o desde Firebase Auth.
 ```mermaid
 flowchart TD
 
-    A[Estructura del Proyecto 📁]
+    A[Estructura del Proyecto]
 
     A --> B[Backend (Go)]
     A --> C[Frontend (React + MUI)]
@@ -316,7 +316,6 @@ flowchart TD
     D --> D2[Env Vars]
     D --> D3[Seeds & Reset Scripts]
     D --> D4[CI/CD futuro]
-    
 ```
 
 ---
