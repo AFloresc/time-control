@@ -1,10 +1,11 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import { useAuth } from "../hooks/useAuth";
+import MenuIcon from "@mui/icons-material/Menu";
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -21,6 +22,7 @@ export default function Navbar() {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <IconButton color="inherit" onClick={onMenuClick}>
                         <MenuIcon />
+
                     </IconButton>
 
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
