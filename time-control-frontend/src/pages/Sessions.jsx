@@ -82,15 +82,15 @@ export default function Sessions() {
 
                     <TableBody>
                         {sessions.map((s) => {
-                            const start = new Date(s.start_time);
-                            const end = s.end_time ? new Date(s.end_time) : null;
+                            const start = new Date(s.StartTime);
+                            const end = s.EndTime ? new Date(s.EndTime) : null;
 
                             const duration = end
                                 ? Math.round((end - start) / 60000) + " min"
                                 : "En curso";
 
                             return (
-                                <TableRow key={s.id}>
+                                <TableRow key={s.ID}>
                                     <TableCell>{start.toLocaleString()}</TableCell>
                                     <TableCell>{end ? end.toLocaleString() : "—"}</TableCell>
                                     <TableCell>{duration}</TableCell>
