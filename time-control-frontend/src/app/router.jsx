@@ -1,9 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
+
 import RequireAuth from "../components/RequireAuth";
 import Layout from "../components/Layout";
 import Sessions from "../pages/Sessions";
+import Clock from "../pages/Clock";
 
 const router = createBrowserRouter([
     {
@@ -22,8 +24,10 @@ const router = createBrowserRouter([
                 path: "sessions",
                 element: <Sessions />,
             },
-
-
+            {
+                path: "clock",
+                element: <Clock />,
+            },
         ],
     },
     {
