@@ -13,6 +13,7 @@ import (
 	"time-control/internal/users"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -43,6 +44,13 @@ func main() {
 
 	r := router.NewRouter(sessionHandler, userRepo, firebaseApp)
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5175"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowCredentials: true,
+	}).Handler(r)
+
 	log.Println("Servidor iniciado en :8080")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", corsHandler)
 }
