@@ -5,7 +5,9 @@ import {
     Typography,
     CircularProgress,
     Paper,
+    Grid
 } from "@mui/material";
+import { Today, DateRange, CalendarMonth } from "@mui/icons-material";
 import { useAuth } from "../hooks/useAuth";
 
 function formatDuration(seconds) {
@@ -24,12 +26,41 @@ function getProgressColor(seconds) {
     return "error.main";
 }
 
+function getDuration(start, end) {
+    return Math.floor((end - start) / 1000);
+}
+
+function isSameDay(a, b) {
+    return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+    );
+}
+
+function getISOWeek(date) {
+    const temp = new Date(date.getTime());
+    temp.setHours(0, 0, 0, 0);
+    temp.setDate(temp.getDate() + 3 - ((temp.getDay() + 6) % 7));
+    const week1 = new Date(temp.getFullYear(), 0, 4);
+    return (
+        1 +
+        Math.round(
+            ((temp.getTime() - week1.getTime()) / 86400000 -
+                3 +
+                ((week1.getDay() + 6) % 7)) /
+            7
+        )
+    );
+}
+
 export default function Clock() {
     const { user } = useAuth();
     const [activeSession, setActiveSession] = useState(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [elapsed, setElapsed] = useState(0);
+    const [sessions, setSessions] = useState([]);
 
     const MAX_SECONDS = 8 * 3600; // 8 horas
     const rawProgress = (elapsed / MAX_SECONDS) * 100;
@@ -44,8 +75,10 @@ export default function Clock() {
             });
 
             const data = await res.json();
+            setSessions(data);
             const open = data.find((s) => !s.EndTime);
             setActiveSession(open || null);
+
         } catch (err) {
             console.error(err);
         } finally {
@@ -111,6 +144,38 @@ export default function Clock() {
         );
     }
 
+    const now = new Date();
+
+    let totalToday = 0;
+    let totalWeek = 0;
+    let totalMonth = 0;
+    let lastSession = null;
+
+    sessions.forEach((s) => {
+        const start = new Date(s.StartTime);
+        const end = s.EndTime ? new Date(s.EndTime) : now;
+        const duration = getDuration(start, end);
+
+        if (!lastSession || new Date(s.StartTime) > new Date(lastSession.StartTime)) {
+            lastSession = s;
+        }
+
+        if (isSameDay(start, now)) {
+            totalToday += duration;
+        }
+
+        if (getISOWeek(start) === getISOWeek(now)) {
+            totalWeek += duration;
+        }
+
+        if (
+            start.getFullYear() === now.getFullYear() &&
+            start.getMonth() === now.getMonth()
+        ) {
+            totalMonth += duration;
+        }
+    });
+
     return (
         <Box>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
@@ -127,7 +192,6 @@ export default function Clock() {
                             </strong>
                         </Typography>
 
-                        {/* Círculo de progreso */}
                         <Box
                             sx={{
                                 position: "relative",
@@ -137,7 +201,6 @@ export default function Clock() {
                                 mb: 3,
                             }}
                         >
-                            {/* Fondo gris */}
                             <CircularProgress
                                 variant="determinate"
                                 value={100}
@@ -146,7 +209,6 @@ export default function Clock() {
                                 sx={{ color: "grey.300", position: "absolute" }}
                             />
 
-                            {/* Progreso azul */}
                             <CircularProgress
                                 variant="determinate"
                                 value={progress}
@@ -155,7 +217,6 @@ export default function Clock() {
                                 sx={{ color: getProgressColor(elapsed) }}
                             />
 
-                            {/* Texto en el centro */}
                             <Box
                                 sx={{
                                     top: 0,
@@ -173,7 +234,8 @@ export default function Clock() {
                                 {formatDuration(elapsed)}
                             </Box>
                         </Box>
-                        <Box sx={{ textAlign: "center" }}>
+
+                        <Box sx={{ textAlign: "center", mb: 3 }}>
                             <Button
                                 variant="contained"
                                 color="error"
@@ -200,6 +262,64 @@ export default function Clock() {
                         </Button>
                     </>
                 )}
+                <Box sx={{ mt: 4, textAlign: "center" }}>
+                    <Typography sx={{ fontWeight: 600, mb: 2 }}>
+                        Resumen
+                    </Typography>
+
+                    <Grid container spacing={2} justifyContent="center">
+                        {/* Tarjeta Día */}
+                        <Grid item xs={12} sm={4} md={3}>
+                            <Paper sx={{ p: 2, textAlign: "center" }}>
+                                <Today sx={{ fontSize: 32, color: "primary.main" }} />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 600, mt: 1 }}>
+                                    Hoy
+                                </Typography>
+                                <Typography variant="h6">{formatDuration(totalToday)}</Typography>
+                            </Paper>
+                        </Grid>
+
+                        {/* Tarjeta Semana */}
+                        <Grid item xs={12} sm={4} md={3}>
+                            <Paper sx={{ p: 2, textAlign: "center" }}>
+                                <DateRange sx={{ fontSize: 32, color: "primary.main" }} />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 600, mt: 1 }}>
+                                    Semana
+                                </Typography>
+                                <Typography variant="h6">{formatDuration(totalWeek)}</Typography>
+                            </Paper>
+                        </Grid>
+
+                        {/* Tarjeta Mes */}
+                        <Grid item xs={12} sm={4} md={3}>
+                            <Paper sx={{ p: 2, textAlign: "center" }}>
+                                <CalendarMonth sx={{ fontSize: 32, color: "primary.main" }} />
+                                <Typography variant="subtitle2" sx={{ fontWeight: 600, mt: 1 }}>
+                                    Mes
+                                </Typography>
+                                <Typography variant="h6">{formatDuration(totalMonth)}</Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+
+                    {/* Última sesión y estado */}
+                    <Box sx={{ mt: 3 }}>
+                        <Typography sx={{ mb: 1 }}>
+                            Última sesión:{" "}
+                            {lastSession
+                                ? new Date(lastSession.StartTime).toLocaleString()
+                                : "—"}
+                        </Typography>
+
+                        <Typography>
+                            Estado actual:{" "}
+                            <strong style={{ color: activeSession ? "green" : "red" }}>
+                                {activeSession ? "En jornada" : "Fuera de jornada"}
+                            </strong>
+                        </Typography>
+                    </Box>
+                </Box>
+
             </Paper>
         </Box>
     );
