@@ -3,6 +3,7 @@ package sessions
 import (
 	"errors"
 	"time"
+	"time-control/internal/intervals"
 )
 
 var (
@@ -12,16 +13,23 @@ var (
 )
 
 type Service struct {
-	repo Repository
+	repo        Repository
+	intervalSvc *intervals.Service
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{repo: repo}
+func NewService(repo Repository, intervalSvc *intervals.Service) *Service {
+	return &Service{
+		repo:        repo,
+		intervalSvc: intervalSvc,
+	}
 }
 
+// ------------------------------------------------------------
+// INICIAR JORNADA (crea sesión + primer intervalo)
+// ------------------------------------------------------------
 func (s *Service) StartSession(userID string) (*WorkSession, error) {
-	// ¿Ya hay una sesión abierta?
-	open, err := s.repo.GetOpenSession(userID)
+	// ¿Ya hay una jornada abierta?
+	open, err := s.repo.GetActiveSession(userID)
 	if err == nil && open != nil {
 		return nil, ErrSessionAlreadyOpen
 	}
@@ -40,9 +48,17 @@ func (s *Service) StartSession(userID string) (*WorkSession, error) {
 		return nil, err
 	}
 
+	// Crear primer intervalo
+	if _, err := s.intervalSvc.StartInterval(session.ID); err != nil {
+		return nil, err
+	}
+
 	return session, nil
 }
 
+// ------------------------------------------------------------
+// CREAR SESIÓN MANUAL (no afecta a intervalos)
+// ------------------------------------------------------------
 func (s *Service) CreateManualSession(userID string, date time.Time, start, end time.Time) (*WorkSession, error) {
 	if !end.After(start) {
 		return nil, ErrInvalidTimeRange
@@ -65,33 +81,40 @@ func (s *Service) CreateManualSession(userID string, date time.Time, start, end 
 	return session, nil
 }
 
+// ------------------------------------------------------------
+// FINALIZAR JORNADA (cierra intervalo activo + cierra sesión)
+// ------------------------------------------------------------
+func (s *Service) EndSession(userID string) (*WorkSession, error) {
+	session, err := s.repo.GetActiveSession(userID)
+	if err != nil || session == nil {
+		return nil, ErrNoOpenSession
+	}
+
+	now := time.Now()
+
+	// Cerrar intervalo activo
+	_, _ = s.intervalSvc.CloseActiveInterval(session.ID)
+
+	// Cerrar jornada
+	if err := s.repo.CloseSession(session.ID, now); err != nil {
+		return nil, err
+	}
+
+	session.EndTime = &now
+	session.ClosedAt = &now
+
+	return session, nil
+}
+
+// ------------------------------------------------------------
+// CONSULTAS
+// ------------------------------------------------------------
 func (s *Service) GetUserSessions(userID string) ([]WorkSession, error) {
 	return s.repo.GetByUser(userID)
 }
 
 func (s *Service) GetSessionsForAdmin(userID string) ([]WorkSession, error) {
 	return s.repo.GetByUser(userID)
-}
-
-func (s *Service) EndSession(userID string) (*WorkSession, error) {
-	// Buscar sesión abierta
-	session, err := s.repo.GetOpenSession(userID)
-	if err != nil {
-		return nil, ErrNoOpenSession
-	}
-
-	now := time.Now()
-
-	// Cerrar sesión en DB
-	if err := s.repo.CloseSession(session.ID, now); err != nil {
-		return nil, err
-	}
-
-	// Actualizar struct en memoria para devolverlo completo
-	session.EndTime = &now
-	session.ClosedAt = &now
-
-	return session, nil
 }
 
 func (s *Service) GetAllSessions() ([]WorkSession, error) {
