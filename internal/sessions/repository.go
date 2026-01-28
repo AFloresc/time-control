@@ -27,18 +27,28 @@ func (r *Repository) CloseSession(id uint, end time.Time) error {
 		}).Error
 }
 
-func (r *Repository) GetOpenSession(userID string) (*WorkSession, error) {
+func (r *Repository) GetActiveSession(userID string) (*WorkSession, error) {
 	var session WorkSession
-	err := r.db.Where("user_id = ? AND end_time IS NULL", userID).First(&session).Error
+	err := r.db.
+		Where("user_id = ? AND end_time IS NULL", userID).
+		Preload("Intervals").
+		First(&session).Error
+
 	if err != nil {
 		return nil, err
 	}
+
 	return &session, nil
 }
 
 func (r *Repository) GetByUser(userID string) ([]WorkSession, error) {
 	var sessions []WorkSession
-	err := r.db.Where("user_id = ?", userID).Order("date desc").Find(&sessions).Error
+	err := r.db.
+		Where("user_id = ?", userID).
+		Order("date desc").
+		Preload("Intervals").
+		Find(&sessions).Error
+
 	return sessions, err
 }
 
@@ -52,8 +62,15 @@ func (r *Repository) GetAllSessions() ([]WorkSession, error) {
 
 func (r *Repository) GetSessionsByUser(userID string) ([]WorkSession, error) {
 	var sessions []WorkSession
-	if err := r.db.Where("user_id = ?", userID).Order("start_time DESC").Find(&sessions).Error; err != nil {
-		return nil, err
-	}
-	return sessions, nil
+	err := r.db.
+		Where("user_id = ?", userID).
+		Order("start_time DESC").
+		Preload("Intervals").
+		Find(&sessions).Error
+
+	return sessions, err
+}
+
+func (r *Repository) GetOpenSession(userID string) (*WorkSession, error) {
+	return r.GetActiveSession(userID)
 }
