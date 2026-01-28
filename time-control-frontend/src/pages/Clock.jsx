@@ -1,4 +1,3 @@
-// src/pages/Clock.jsx
 import {
     Box,
     Typography,

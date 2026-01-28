@@ -21,6 +21,8 @@ export default function ClockSummaryStatus({
             <Typography sx={{ fontWeight: 600, mb: 2 }}>Resumen</Typography>
 
             <Grid container spacing={2} justifyContent="center">
+
+                {/* Hoy */}
                 <Grid item xs={12} sm={4} md={3}>
                     <Fade in={animate} timeout={600}>
                         <Slide in={animate} direction="up" timeout={600}>
@@ -29,8 +31,39 @@ export default function ClockSummaryStatus({
                                     p: 2,
                                     textAlign: "center",
                                     borderRadius: 3,
+                                    position: "relative",
+                                    overflow: "hidden",
                                     background: "linear-gradient(135deg, #6EE7B7, #3B82F6)",
                                     color: "white",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease",
+
+                                    "&::before": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        background: "rgba(255, 255, 255, 0.15)",
+                                        backdropFilter: "blur(12px)",
+                                        WebkitBackdropFilter: "blur(12px)",
+                                        borderRadius: 3,
+                                        zIndex: 0,
+                                        transition: "all 0.3s ease",
+                                    },
+
+                                    "&:hover::before": {
+                                        background: "rgba(255, 255, 255, 0.22)",
+                                        backdropFilter: "blur(16px)",
+                                    },
+
+                                    "&:hover": {
+                                        transform: "translateY(-6px) scale(1.03)",
+                                        boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+                                    },
+
+                                    "& > *": {
+                                        position: "relative",
+                                        zIndex: 1,
+                                    },
                                 }}
                             >
                                 <Today sx={{ fontSize: 32 }} />
@@ -45,6 +78,7 @@ export default function ClockSummaryStatus({
                     </Fade>
                 </Grid>
 
+                {/* Semana */}
                 <Grid item xs={12} sm={4} md={3}>
                     <Fade in={animate} timeout={700}>
                         <Slide in={animate} direction="up" timeout={700}>
@@ -53,8 +87,39 @@ export default function ClockSummaryStatus({
                                     p: 2,
                                     textAlign: "center",
                                     borderRadius: 3,
+                                    position: "relative",
+                                    overflow: "hidden",
                                     background: "linear-gradient(135deg, #FDE68A, #F59E0B)",
                                     color: "white",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease",
+
+                                    "&::before": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        background: "rgba(255, 255, 255, 0.15)",
+                                        backdropFilter: "blur(12px)",
+                                        WebkitBackdropFilter: "blur(12px)",
+                                        borderRadius: 3,
+                                        zIndex: 0,
+                                        transition: "all 0.3s ease",
+                                    },
+
+                                    "&:hover::before": {
+                                        background: "rgba(255, 255, 255, 0.22)",
+                                        backdropFilter: "blur(16px)",
+                                    },
+
+                                    "&:hover": {
+                                        transform: "translateY(-6px) scale(1.03)",
+                                        boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+                                    },
+
+                                    "& > *": {
+                                        position: "relative",
+                                        zIndex: 1,
+                                    },
                                 }}
                             >
                                 <DateRange sx={{ fontSize: 32 }} />
@@ -69,6 +134,7 @@ export default function ClockSummaryStatus({
                     </Fade>
                 </Grid>
 
+                {/* Mes */}
                 <Grid item xs={12} sm={4} md={3}>
                     <Fade in={animate} timeout={800}>
                         <Slide in={animate} direction="up" timeout={800}>
@@ -77,8 +143,39 @@ export default function ClockSummaryStatus({
                                     p: 2,
                                     textAlign: "center",
                                     borderRadius: 3,
+                                    position: "relative",
+                                    overflow: "hidden",
                                     background: "linear-gradient(135deg, #A78BFA, #6366F1)",
                                     color: "white",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease",
+
+                                    "&::before": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        background: "rgba(255, 255, 255, 0.15)",
+                                        backdropFilter: "blur(12px)",
+                                        WebkitBackdropFilter: "blur(12px)",
+                                        borderRadius: 3,
+                                        zIndex: 0,
+                                        transition: "all 0.3s ease",
+                                    },
+
+                                    "&:hover::before": {
+                                        background: "rgba(255, 255, 255, 0.22)",
+                                        backdropFilter: "blur(16px)",
+                                    },
+
+                                    "&:hover": {
+                                        transform: "translateY(-6px) scale(1.03)",
+                                        boxShadow: "0 12px 32px rgba(0,0,0,0.35)",
+                                    },
+
+                                    "& > *": {
+                                        position: "relative",
+                                        zIndex: 1,
+                                    },
                                 }}
                             >
                                 <CalendarMonth sx={{ fontSize: 32 }} />
@@ -92,6 +189,7 @@ export default function ClockSummaryStatus({
                         </Slide>
                     </Fade>
                 </Grid>
+
             </Grid>
 
             <Box sx={{ mt: 3 }}>
