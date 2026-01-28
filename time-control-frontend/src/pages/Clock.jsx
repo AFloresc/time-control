@@ -1,12 +1,29 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, CircularProgress, Paper } from "@mui/material";
+import {
+    Box,
+    Button,
+    Typography,
+    CircularProgress,
+    Paper,
+} from "@mui/material";
 import { useAuth } from "../hooks/useAuth";
+
+function formatDuration(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+
+    if (h > 0) return `${h}h ${m}m ${s}s`;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+}
 
 export default function Clock() {
     const { user } = useAuth();
     const [activeSession, setActiveSession] = useState(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [elapsed, setElapsed] = useState(0);
 
     const fetchActiveSession = async () => {
         setLoading(true);
@@ -56,6 +73,26 @@ export default function Clock() {
         }
     };
 
+    // ⏱️ Contador en tiempo real
+    useEffect(() => {
+        let interval;
+
+        if (activeSession) {
+            const start = new Date(activeSession.StartTime);
+
+            // Actualizar inmediatamente
+            setElapsed(Math.floor((Date.now() - start.getTime()) / 1000));
+
+            interval = setInterval(() => {
+                setElapsed(Math.floor((Date.now() - start.getTime()) / 1000));
+            }, 1000);
+        } else {
+            setElapsed(0);
+        }
+
+        return () => clearInterval(interval);
+    }, [activeSession]);
+
     useEffect(() => {
         fetchActiveSession();
     }, []);
@@ -77,9 +114,17 @@ export default function Clock() {
             <Paper sx={{ p: 3, textAlign: "center" }}>
                 {activeSession ? (
                     <>
-                        <Typography sx={{ mb: 2 }}>
+                        <Typography sx={{ mb: 1 }}>
                             Sesión iniciada a las:{" "}
-                            <strong>{new Date(activeSession.StartTime).toLocaleString()}</strong>
+                            <strong>
+                                {new Date(activeSession.StartTime).toLocaleString()}
+                            </strong>
+                        </Typography>
+
+                        <Typography
+                            sx={{ mb: 3, fontSize: "1.2rem", fontWeight: 600 }}
+                        >
+                            Tiempo trabajado: {formatDuration(elapsed)}
                         </Typography>
 
                         <Button
