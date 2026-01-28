@@ -2,17 +2,15 @@ import {
     Drawer,
     List,
     ListItemButton,
+    ListItemIcon,
     ListItemText,
     Toolbar,
     Divider,
-    ListItemIcon
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import PunchClockIcon from "@mui/icons-material/PunchClock";
-
-
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Sidebar({ open, onClose }) {
     const navigate = useNavigate();
@@ -22,7 +20,6 @@ export default function Sidebar({ open, onClose }) {
         { label: "Inicio", path: "/", icon: <HomeOutlinedIcon /> },
         { label: "Mis sesiones", path: "/sessions", icon: <AccessTimeOutlinedIcon /> },
         { label: "Fichar", path: "/clock", icon: <PunchClockIcon /> },
-        // más rutas en el futuro
     ];
 
     const handleNavigate = (path) => {
@@ -35,7 +32,10 @@ export default function Sidebar({ open, onClose }) {
             <Toolbar />
             <List sx={{ width: 260 }}>
                 {menuItems.map((item) => {
-                    const isActive = location.pathname === item.path;
+                    const isActive =
+                        item.path === "/"
+                            ? location.pathname === "/"
+                            : location.pathname.startsWith(item.path);
 
                     return (
                         <ListItemButton

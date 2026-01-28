@@ -3,6 +3,7 @@ import Login from "../pages/Login";
 import Home from "../pages/Home";
 import RequireAuth from "../components/RequireAuth";
 import Layout from "../components/Layout";
+import Sessions from "../pages/Sessions";
 
 const router = createBrowserRouter([
     {
@@ -17,6 +18,12 @@ const router = createBrowserRouter([
                 index: true,
                 element: <Home />,
             },
+            {
+                path: "sessions",
+                element: <Sessions />,
+            },
+
+
         ],
     },
     {
