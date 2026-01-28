@@ -8,6 +8,7 @@ import (
 
 	"time-control/internal/auth"
 	"time-control/internal/database"
+	"time-control/internal/intervals"
 	"time-control/internal/router"
 	"time-control/internal/sessions"
 	"time-control/internal/users"
@@ -31,6 +32,7 @@ func main() {
 	db.AutoMigrate(
 		&users.User{},
 		&sessions.WorkSession{},
+		&intervals.WorkInterval{},
 	)
 
 	auth.InitFirebase()
@@ -45,7 +47,7 @@ func main() {
 	r := router.NewRouter(sessionHandler, userRepo, firebaseApp)
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5175"},
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
