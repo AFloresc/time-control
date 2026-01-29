@@ -41,7 +41,10 @@ func main() {
 	firebaseApp := auth.FirebaseApp
 	userRepo := users.NewRepository(db)
 	sessionRepo := sessions.NewRepository(db)
-	sessionService := sessions.NewService(*sessionRepo)
+	intervalRepo := intervals.NewRepository(db)
+	intervalService := intervals.NewService(intervalRepo)
+
+	sessionService := sessions.NewService(*sessionRepo, intervalService)
 	sessionHandler := sessions.NewHandler(sessionService)
 
 	r := router.NewRouter(sessionHandler, userRepo, firebaseApp)

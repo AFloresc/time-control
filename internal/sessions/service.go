@@ -127,3 +127,7 @@ func (s *Service) GetAdminSessions(userID string) ([]WorkSession, error) {
 	}
 	return s.repo.GetAllSessions()
 }
+
+func (s *Service) GetActiveSession(userID string) (*WorkSession, error) {
+	return s.repo.GetActiveSession(userID)
+}

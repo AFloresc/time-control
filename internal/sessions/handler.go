@@ -30,6 +30,10 @@ func getUserID(r *http.Request, w http.ResponseWriter) (string, bool) {
 	return uid, true
 }
 
+// ------------------------------------------------------------
+// POST /me/sessions/start
+// Inicia jornada + crea primer intervalo
+// ------------------------------------------------------------
 func (h *Handler) StartSession(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserID(r, w)
 	if !ok {
@@ -45,6 +49,10 @@ func (h *Handler) StartSession(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(session)
 }
 
+// ------------------------------------------------------------
+// POST /me/sessions/end
+// Cierra intervalo activo + cierra jornada
+// ------------------------------------------------------------
 func (h *Handler) EndSession(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserID(r, w)
 	if !ok {
@@ -60,6 +68,31 @@ func (h *Handler) EndSession(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(session)
 }
 
+// ------------------------------------------------------------
+// GET /me/sessions/active
+// Devuelve jornada activa + intervalos
+// ------------------------------------------------------------
+func (h *Handler) GetActiveSession(w http.ResponseWriter, r *http.Request) {
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
+
+	session, err := h.service.GetActiveSession(userID)
+	if err != nil || session == nil {
+		// No hay jornada activa → devolvemos null
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("null"))
+		return
+	}
+
+	json.NewEncoder(w).Encode(session)
+}
+
+// ------------------------------------------------------------
+// POST /me/sessions/manual
+// Crear sesión manual (sin intervalos)
+// ------------------------------------------------------------
 func (h *Handler) CreateManualSession(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserID(r, w)
 	if !ok {
@@ -99,6 +132,10 @@ func (h *Handler) CreateManualSession(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(session)
 }
 
+// ------------------------------------------------------------
+// GET /me/sessions
+// Lista de sesiones del usuario (con intervalos)
+// ------------------------------------------------------------
 func (h *Handler) GetMySessions(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserID(r, w)
 	if !ok {
