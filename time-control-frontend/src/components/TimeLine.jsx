@@ -1,7 +1,8 @@
 import { Box } from "@mui/material";
 import TimelineSegment from "./timeline/TimelineSegments";
+import TimelineTickLines from "./timeline/TimelineTickLines";
 
-export default function TimelineBar({ segments }) {
+export default function TimelineBar({ segments, ticks }) {
     return (
         <Box
             sx={{
@@ -13,6 +14,8 @@ export default function TimelineBar({ segments }) {
                 mb: 2,
             }}
         >
+            <TimelineTickLines ticks={ticks} />
+
             {segments.map((segment, i) => (
                 <TimelineSegment key={i} segment={segment} />
             ))}

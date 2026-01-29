@@ -85,13 +85,13 @@ export default function Clock() {
             </Paper>
             <Box sx={{ mt: 4, p: 2 }}>
                 <Typography variant="h6" sx={{ mb: 1 }}>Hoy</Typography>
-                <TimelineBar segments={timelineToday} />
+                <TimelineBar segments={timelineToday} ticks={ticksToday} />
                 <TimelineTicks ticks={ticksToday} />
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Semana</Typography>
-                <TimelineBar segments={timelineWeek} />
+                <TimelineBar segments={timelineWeek} ticks={ticksWeek} />
                 <TimelineTicks ticks={ticksWeek} />
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Mes</Typography>
-                <TimelineBar segments={timelineMonth} />
+                <TimelineBar segments={timelineMonth} ticks={ticksMonth} />
                 <TimelineTicks ticks={ticksMonth} />
             </Box>
         </Box>
