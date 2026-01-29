@@ -60,17 +60,21 @@ export function buildTimeline(intervals, rangeStart, rangeEnd) {
                 ? new Date(interval.EndTime).getTime()
                 : Date.now();
 
-            // Recortar el intervalo al rango visual
             const clampedStart = Math.max(start, rangeStart);
             const clampedEnd = Math.min(end, rangeEnd);
 
-            // Si no hay solapamiento, ignorar
             if (clampedEnd <= clampedStart) return null;
 
             const offset = ((clampedStart - rangeStart) / totalRange) * 100;
             const width = ((clampedEnd - clampedStart) / totalRange) * 100;
 
-            return { offset, width };
+            return {
+                offset,
+                width,
+                realStart: new Date(start),
+                realEnd: new Date(end),
+                duration: Math.floor((end - start) / 1000),
+            };
         })
-        .filter(Boolean); // eliminar nulls
+        .filter(Boolean);
 }

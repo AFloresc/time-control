@@ -221,6 +221,38 @@ export function useClock() {
     const timelineWeek = buildTimeline(intervals, weekStart.getTime(), weekEnd);
     const timelineMonth = buildTimeline(intervals, monthStart, monthEnd);
 
+    // Ticks de la timeline
+    function buildTicksForDay() {
+        const ticks = [];
+        for (let h = 0; h <= 24; h += 6) {
+            ticks.push({
+                label: `${h}h`,
+                offset: (h / 24) * 100,
+            });
+        }
+        return ticks;
+    }
+
+    function buildTicksForWeek() {
+        const labels = ["L", "M", "X", "J", "V", "S", "D"];
+        return labels.map((label, i) => ({
+            label,
+            offset: (i / 7) * 100,
+        }));
+    }
+
+    function buildTicksForMonth() {
+        const ticks = [];
+        for (let w = 0; w < 5; w++) {
+            ticks.push({
+                label: `Semana ${w + 1}`,
+                offset: (w / 5) * 100,
+            });
+        }
+        return ticks;
+    }
+    // ----------------------
+
     const rawProgress = (elapsed / MAX_SECONDS) * 100;
     const progress = Math.min(Math.max(rawProgress, 1), 100);
 
@@ -253,5 +285,8 @@ export function useClock() {
         timelineToday,
         timelineWeek,
         timelineMonth,
+        ticksToday: buildTicksForDay(),
+        ticksWeek: buildTicksForWeek(),
+        ticksMonth: buildTicksForMonth(),
     };
 }

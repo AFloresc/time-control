@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import TimelineSegment from "./timeline/TimelineSegments";
 
 export default function TimelineBar({ segments }) {
     return (
@@ -13,21 +14,7 @@ export default function TimelineBar({ segments }) {
             }}
         >
             {segments.map((segment, i) => (
-                <Box
-                    key={i}
-                    sx={{
-                        position: "absolute",
-                        left: `${segment.offset}%`,
-                        width: `${segment.width}%`,
-                        height: "100%",
-                        background:
-                            segment.width > 10
-                                ? "#4caf50" // verde fuerte para intervalos largos
-                                : "#81c784", // verde claro para intervalos cortos
-                        borderRadius: 6,
-                        transition: "all 0.3s ease",
-                    }}
-                />
+                <TimelineSegment key={i} segment={segment} />
             ))}
         </Box>
     );

@@ -10,6 +10,7 @@ import ClockActiveSession from "../components/clock/ClockActiveSession.jsx";
 import ClockInactiveSession from "../components/clock/ClockInactiveSession.jsx";
 import ClockSummaryStatus from "../components/clock/ClockSummaryStatus.jsx";
 import TimelineBar from "../components/TimeLine.jsx";
+import TimelineTicks from "../components/timeline/TimelineTicks.jsx";
 
 export default function Clock() {
     const {
@@ -33,6 +34,9 @@ export default function Clock() {
         timelineToday,
         timelineWeek,
         timelineMonth,
+        ticksToday,
+        ticksWeek,
+        ticksMonth,
     } = useClock();
 
     if (loading) {
@@ -82,12 +86,13 @@ export default function Clock() {
             <Box sx={{ mt: 4, p: 2 }}>
                 <Typography variant="h6" sx={{ mb: 1 }}>Hoy</Typography>
                 <TimelineBar segments={timelineToday} />
-
+                <TimelineTicks ticks={ticksToday} />
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Semana</Typography>
                 <TimelineBar segments={timelineWeek} />
-
+                <TimelineTicks ticks={ticksWeek} />
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Mes</Typography>
                 <TimelineBar segments={timelineMonth} />
+                <TimelineTicks ticks={ticksMonth} />
             </Box>
         </Box>
     );
