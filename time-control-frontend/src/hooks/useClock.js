@@ -264,6 +264,7 @@ export function useClock() {
         return activeInterval ? "active" : "paused";
     }, [activeSession, activeInterval]);
 
+
     return {
         loading,
         activeSession,
@@ -288,5 +289,12 @@ export function useClock() {
         ticksToday: buildTicksForDay(),
         ticksWeek: buildTicksForWeek(),
         ticksMonth: buildTicksForMonth(),
+        intervals,
+        weekStart: weekStart.getTime(),
+        weekEnd,
+        monthStart,
+        monthEnd,
+        todayStart,
+        todayEnd,
     };
 }

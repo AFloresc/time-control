@@ -49,6 +49,10 @@ export function getISOWeek(date) {
     );
 }
 
+export function buildTimelineForRange(intervals, start, end) {
+    return buildTimeline(intervals, start, end);
+}
+
 export function buildTimeline(intervals, rangeStart, rangeEnd) {
     const totalRange = rangeEnd - rangeStart;
     if (totalRange <= 0) return [];

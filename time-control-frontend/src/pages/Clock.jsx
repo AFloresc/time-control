@@ -3,6 +3,7 @@ import {
     Typography,
     Paper,
     CircularProgress,
+    Button,
 } from "@mui/material";
 
 import { useClock } from "../hooks/useClock";
@@ -11,6 +12,8 @@ import ClockInactiveSession from "../components/clock/ClockInactiveSession.jsx";
 import ClockSummaryStatus from "../components/clock/ClockSummaryStatus.jsx";
 import TimelineBar from "../components/TimeLine.jsx";
 import TimelineTicks from "../components/timeline/TimelineTicks.jsx";
+import { buildTimelineForRange } from "../utils/time.js";
+import { useState } from "react";
 
 export default function Clock() {
     const {
@@ -37,7 +40,29 @@ export default function Clock() {
         ticksToday,
         ticksWeek,
         ticksMonth,
+        intervals,       // 👈 NECESARIO PARA EL ZOOM
+        todayStart,
+        todayEnd,
+        weekStart,
+        weekEnd,
+        monthStart,
+        monthEnd,
     } = useClock();
+
+    // Estado del zoom
+    const [zoom, setZoom] = useState(null);
+
+    // Timeline ampliado
+    const zoomedTimeline = zoom
+        ? buildTimelineForRange(intervals, zoom.start, zoom.end)
+        : null;
+
+    // Lógica del zoom
+    const handleZoom = (percent, range) => {
+        const start = range.start + (range.end - range.start) * (percent / 100);
+        const end = start + (range.end - range.start) * 0.25; // Zoom x4
+        setZoom({ start, end });
+    };
 
     if (loading) {
         return (
@@ -83,17 +108,63 @@ export default function Clock() {
                     activeSession={activeSession}
                 />
             </Paper>
+
             <Box sx={{ mt: 4, p: 2 }}>
+                {/* HOY */}
                 <Typography variant="h6" sx={{ mb: 1 }}>Hoy</Typography>
-                <TimelineBar segments={timelineToday} ticks={ticksToday} />
+                <TimelineBar
+                    segments={timelineToday}
+                    ticks={ticksToday}
+                    onZoom={(percent) =>
+                        handleZoom(percent, { start: todayStart, end: todayEnd })
+                    }
+                />
                 <TimelineTicks ticks={ticksToday} />
+
+                {/* SEMANA */}
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Semana</Typography>
-                <TimelineBar segments={timelineWeek} ticks={ticksWeek} />
+                <TimelineBar
+                    segments={timelineWeek}
+                    ticks={ticksWeek}
+                    onZoom={(percent) =>
+                        handleZoom(percent, { start: weekStart, end: weekEnd })
+                    }
+                />
                 <TimelineTicks ticks={ticksWeek} />
+
+                {/* MES */}
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Mes</Typography>
-                <TimelineBar segments={timelineMonth} ticks={ticksMonth} />
+                <TimelineBar
+                    segments={timelineMonth}
+                    ticks={ticksMonth}
+                    onZoom={(percent) =>
+                        handleZoom(percent, { start: monthStart, end: monthEnd })
+                    }
+                />
                 <TimelineTicks ticks={ticksMonth} />
             </Box>
+
+            {/* ZOOM VIEW */}
+            {zoom && (
+                <Box sx={{ mt: 4, p: 2 }}>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                        Zoom
+                    </Typography>
+
+                    <TimelineBar
+                        segments={zoomedTimeline}
+                        ticks={[]} // puedes generar ticks dinámicos si quieres
+                    />
+
+                    <Button
+                        variant="outlined"
+                        sx={{ mt: 2 }}
+                        onClick={() => setZoom(null)}
+                    >
+                        Volver
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 }
