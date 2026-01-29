@@ -7,4 +7,5 @@ type WorkInterval struct {
 	SessionID uint      `gorm:"index;not null"`
 	StartTime time.Time `gorm:"not null"`
 	EndTime   *time.Time
+	UpdatedAt time.Time
 }

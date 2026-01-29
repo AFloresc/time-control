@@ -40,7 +40,7 @@ func (r *Repository) CloseInterval(interval *WorkInterval) error {
 	return r.db.Model(interval).
 		Updates(map[string]interface{}{
 			"end_time":   interval.EndTime,
-			"updated_at": gorm.Expr("NOW()"),
+			"updated_at": gorm.Expr("CURRENT_TIMESTAMP"),
 		}).Error
 }
 

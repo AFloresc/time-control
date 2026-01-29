@@ -201,3 +201,69 @@ func (h *Handler) GetSessionByID(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(session)
 }
+
+// POST /me/sessions/pause
+func (h *Handler) PauseSession(w http.ResponseWriter, r *http.Request) {
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
+
+	// 1. Obtener la sesión activa
+	session, err := h.service.GetActiveSession(userID)
+	if err != nil || session == nil {
+		http.Error(w, "no active session", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Pausar el intervalo activo
+	_, err = h.service.PauseInterval(session.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// 3. Volver a cargar la sesión actualizada
+	updatedSession, err := h.service.GetActiveSession(userID)
+	if err != nil || updatedSession == nil {
+		http.Error(w, "failed to reload session", http.StatusInternalServerError)
+		return
+	}
+
+	// 4. Devolver la sesión completa al frontend
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedSession)
+}
+
+// POST /me/sessions/resume
+func (h *Handler) ResumeSession(w http.ResponseWriter, r *http.Request) {
+	userID, ok := getUserID(r, w)
+	if !ok {
+		return
+	}
+
+	// 1. Obtener la sesión activa
+	session, err := h.service.GetActiveSession(userID)
+	if err != nil || session == nil {
+		http.Error(w, "no active session", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Reanudar creando un nuevo intervalo activo
+	_, err = h.service.ResumeInterval(session.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// 3. Recargar la sesión actualizada
+	updatedSession, err := h.service.GetActiveSession(userID)
+	if err != nil || updatedSession == nil {
+		http.Error(w, "failed to reload session", http.StatusInternalServerError)
+		return
+	}
+
+	// 4. Devolver la sesión completa al frontend
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedSession)
+}
