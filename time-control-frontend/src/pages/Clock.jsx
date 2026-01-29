@@ -9,6 +9,7 @@ import { useClock } from "../hooks/useClock";
 import ClockActiveSession from "../components/clock/ClockActiveSession.jsx";
 import ClockInactiveSession from "../components/clock/ClockInactiveSession.jsx";
 import ClockSummaryStatus from "../components/clock/ClockSummaryStatus.jsx";
+import TimelineBar from "../components/TimeLine.jsx";
 
 export default function Clock() {
     const {
@@ -29,6 +30,9 @@ export default function Clock() {
         animate,
         sessionStatus,
         elapsedSession,
+        timelineToday,
+        timelineWeek,
+        timelineMonth,
     } = useClock();
 
     if (loading) {
@@ -75,6 +79,16 @@ export default function Clock() {
                     activeSession={activeSession}
                 />
             </Paper>
+            <Box sx={{ mt: 4, p: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1 }}>Hoy</Typography>
+                <TimelineBar segments={timelineToday} />
+
+                <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Semana</Typography>
+                <TimelineBar segments={timelineWeek} />
+
+                <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Mes</Typography>
+                <TimelineBar segments={timelineMonth} />
+            </Box>
         </Box>
     );
 }

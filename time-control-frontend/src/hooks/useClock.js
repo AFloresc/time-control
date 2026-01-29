@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { getDuration, isSameDay, getISOWeek } from "../utils/time";
+import { getDuration, isSameDay, getISOWeek, buildTimeline } from "../utils/time";
 
 const MAX_SECONDS = 8 * 3600; // 8 horas
 
@@ -203,6 +203,24 @@ export function useClock() {
         }
     });
 
+    // TIMELINES
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const todayEnd = todayStart + 24 * 3600 * 1000;
+
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay() + 1); // lunes
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = weekStart.getTime() + 7 * 24 * 3600 * 1000;
+
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
+
+    const intervals = sessions.flatMap(s => s.Intervals);
+
+    const timelineToday = buildTimeline(intervals, todayStart, todayEnd);
+    const timelineWeek = buildTimeline(intervals, weekStart.getTime(), weekEnd);
+    const timelineMonth = buildTimeline(intervals, monthStart, monthEnd);
+
     const rawProgress = (elapsed / MAX_SECONDS) * 100;
     const progress = Math.min(Math.max(rawProgress, 1), 100);
 
@@ -232,5 +250,8 @@ export function useClock() {
         lastSession,
         animate,
         sessionStatus,
+        timelineToday,
+        timelineWeek,
+        timelineMonth,
     };
 }

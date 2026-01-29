@@ -48,3 +48,29 @@ export function getISOWeek(date) {
         )
     );
 }
+
+export function buildTimeline(intervals, rangeStart, rangeEnd) {
+    const totalRange = rangeEnd - rangeStart;
+    if (totalRange <= 0) return [];
+
+    return intervals
+        .map(interval => {
+            const start = new Date(interval.StartTime).getTime();
+            const end = interval.EndTime
+                ? new Date(interval.EndTime).getTime()
+                : Date.now();
+
+            // Recortar el intervalo al rango visual
+            const clampedStart = Math.max(start, rangeStart);
+            const clampedEnd = Math.min(end, rangeEnd);
+
+            // Si no hay solapamiento, ignorar
+            if (clampedEnd <= clampedStart) return null;
+
+            const offset = ((clampedStart - rangeStart) / totalRange) * 100;
+            const width = ((clampedEnd - clampedStart) / totalRange) * 100;
+
+            return { offset, width };
+        })
+        .filter(Boolean); // eliminar nulls
+}
