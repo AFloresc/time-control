@@ -1,9 +1,9 @@
-// src/utils/time.js
-
 export function formatDuration(seconds) {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
+    const safe = Number.isFinite(seconds) ? seconds : 0;
+
+    const h = Math.floor(safe / 3600);
+    const m = Math.floor((safe % 3600) / 60);
+    const s = safe % 60;
 
     if (h > 0) return `${h}h ${m}m ${s}s`;
     if (m > 0) return `${m}m ${s}s`;
@@ -17,7 +17,12 @@ export function getProgressColor(seconds) {
 }
 
 export function getDuration(start, end) {
-    return Math.floor((end - start) / 1000);
+    const startTime = new Date(start);
+    const endTime = new Date(end);
+
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) return 0;
+
+    return Math.floor((endTime - startTime) / 1000);
 }
 
 export function isSameDay(a, b) {

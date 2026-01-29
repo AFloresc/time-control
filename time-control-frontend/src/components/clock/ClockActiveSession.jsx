@@ -3,11 +3,17 @@ import { formatDuration, getProgressColor } from "../../utils/time";
 
 export default function ClockActiveSession({
     activeSession,
-    elapsed,
+    sessionStatus,
+    elapsed,          // tiempo del intervalo activo
+    elapsedSession,   // tiempo total acumulado de la sesión (nuevo)
     progress,
     actionLoading,
     endSession,
+    pauseSession,
+    resumeSession,
 }) {
+    const isPaused = sessionStatus === "paused";
+
     return (
         <>
             <Typography sx={{ mb: 1 }}>
@@ -15,13 +21,14 @@ export default function ClockActiveSession({
                 <strong>{new Date(activeSession.StartTime).toLocaleString()}</strong>
             </Typography>
 
+            {/* CONTADOR DEL INTERVALO ACTIVO */}
             <Box
                 sx={{
                     position: "relative",
                     display: "inline-flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    mb: 3,
+                    mb: 1,
                 }}
             >
                 <CircularProgress
@@ -58,7 +65,49 @@ export default function ClockActiveSession({
                 </Box>
             </Box>
 
-            <Box sx={{ textAlign: "center", mb: 3 }}>
+            {/* TIEMPO TOTAL DE LA SESIÓN */}
+            <Typography sx={{ mb: 3, fontSize: "1rem", opacity: 0.8 }}>
+                Tiempo total de la sesión:{" "}
+                <strong>{formatDuration(elapsedSession)}</strong>
+            </Typography>
+
+            {/* BOTONES */}
+            <Box
+                sx={{
+                    textAlign: "center",
+                    mb: 3,
+                    display: "flex",
+                    gap: 2,
+                    justifyContent: "center",
+                }}
+            >
+                {/* PAUSAR */}
+                {!isPaused && (
+                    <Button
+                        variant="contained"
+                        color="warning"
+                        size="large"
+                        onClick={pauseSession}
+                        disabled={actionLoading}
+                    >
+                        {actionLoading ? "Pausando..." : "Pausar"}
+                    </Button>
+                )}
+
+                {/* REANUDAR */}
+                {isPaused && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={resumeSession}
+                        disabled={actionLoading}
+                    >
+                        {actionLoading ? "Reanudando..." : "Reanudar"}
+                    </Button>
+                )}
+
+                {/* FINALIZAR JORNADA */}
                 <Button
                     variant="contained"
                     color="error"

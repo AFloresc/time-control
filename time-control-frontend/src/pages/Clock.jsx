@@ -4,6 +4,7 @@ import {
     Paper,
     CircularProgress,
 } from "@mui/material";
+
 import { useClock } from "../hooks/useClock";
 import ClockActiveSession from "../components/clock/ClockActiveSession.jsx";
 import ClockInactiveSession from "../components/clock/ClockInactiveSession.jsx";
@@ -13,16 +14,21 @@ export default function Clock() {
     const {
         loading,
         activeSession,
+        activeInterval,
         elapsed,
         progress,
         actionLoading,
         startSession,
         endSession,
+        pauseSession,
+        resumeSession,
         totalToday,
         totalWeek,
         totalMonth,
         lastSession,
         animate,
+        sessionStatus,
+        elapsedSession,
     } = useClock();
 
     if (loading) {
@@ -43,10 +49,15 @@ export default function Clock() {
                 {activeSession ? (
                     <ClockActiveSession
                         activeSession={activeSession}
+                        activeInterval={activeInterval}
+                        sessionStatus={sessionStatus}
                         elapsed={elapsed}
                         progress={progress}
                         actionLoading={actionLoading}
                         endSession={endSession}
+                        pauseSession={pauseSession}
+                        resumeSession={resumeSession}
+                        elapsedSession={elapsedSession}
                     />
                 ) : (
                     <ClockInactiveSession
