@@ -74,3 +74,14 @@ func (r *Repository) GetSessionsByUser(userID string) ([]WorkSession, error) {
 func (r *Repository) GetOpenSession(userID string) (*WorkSession, error) {
 	return r.GetActiveSession(userID)
 }
+
+func (r *Repository) GetByID(id uint) (*WorkSession, error) {
+	var session WorkSession
+	if err := r.db.
+		Where("id = ?", id).
+		Preload("Intervals").
+		First(&session).Error; err != nil {
+		return nil, err
+	}
+	return &session, nil
+}

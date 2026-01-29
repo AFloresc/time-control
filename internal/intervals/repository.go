@@ -1,6 +1,8 @@
 package intervals
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -18,16 +20,28 @@ func (r *Repository) Create(interval *WorkInterval) error {
 
 func (r *Repository) GetActiveInterval(sessionID uint) (*WorkInterval, error) {
 	var interval WorkInterval
-	err := r.db.Where("session_id = ? AND end_time IS NULL", sessionID).
+
+	err := r.db.
+		Where("session_id = ? AND end_time IS NULL", sessionID).
 		First(&interval).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	return &interval, nil
 }
 
 func (r *Repository) CloseInterval(interval *WorkInterval) error {
-	return r.db.Save(interval).Error
+	return r.db.Model(interval).
+		Updates(map[string]interface{}{
+			"end_time":   interval.EndTime,
+			"updated_at": gorm.Expr("NOW()"),
+		}).Error
 }
 
 func (r *Repository) GetBySession(sessionID uint) ([]WorkInterval, error) {

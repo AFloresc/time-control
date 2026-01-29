@@ -12,22 +12,34 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(sessionHandler *sessions.Handler, userRepo *users.Repository, firebaseApp *firebase.App) http.Handler {
+func NewRouter(
+	sessionHandler *sessions.Handler,
+	sessionService *sessions.Service,
+	userRepo *users.Repository,
+	firebaseApp *firebase.App,
+) http.Handler {
+
 	r := mux.NewRouter()
 
-	// Middleware de Firebase (lo añadiremos luego)
+	// ------------------------------------------------------------
+	// /me (usuario autenticado)
+	// ------------------------------------------------------------
 	me := r.PathPrefix("/me").Subrouter()
 	me.Use(auth.FirebaseAuthMiddleware(userRepo, firebaseApp))
 
-	// Rutas de sesiones del usuario
+	// Sesiones del usuario
 	sessionsRouter := me.PathPrefix("/sessions").Subrouter()
 	sessionsRouter.HandleFunc("/start", sessionHandler.StartSession).Methods("POST")
 	sessionsRouter.HandleFunc("/end", sessionHandler.EndSession).Methods("POST")
 	sessionsRouter.HandleFunc("/manual", sessionHandler.CreateManualSession).Methods("POST")
+	sessionsRouter.HandleFunc("/pause", sessionHandler.PauseSession).Methods("POST")
+	sessionsRouter.HandleFunc("/resume", sessionHandler.ResumeSession).Methods("POST")
 	sessionsRouter.HandleFunc("", sessionHandler.GetMySessions).Methods("GET")
 
-	// Rutas de administración
-	adminHandler := admin.NewHandler()
+	// ------------------------------------------------------------
+	// /admin (solo administradores)
+	// ------------------------------------------------------------
+	adminHandler := admin.NewHandler(sessionService)
 
 	adminRouter := r.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(auth.FirebaseAuthMiddleware(userRepo, firebaseApp))
@@ -35,6 +47,7 @@ func NewRouter(sessionHandler *sessions.Handler, userRepo *users.Repository, fir
 
 	adminRouter.HandleFunc("/ping", adminHandler.Ping).Methods("GET")
 	adminRouter.HandleFunc("/sessions", adminHandler.GetSessions).Methods("GET")
+	adminRouter.HandleFunc("/sessions/all", adminHandler.GetAllSessions).Methods("GET")
 
 	return r
 }

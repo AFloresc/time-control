@@ -28,7 +28,6 @@ func NewService(repo Repository, intervalSvc *intervals.Service) *Service {
 // INICIAR JORNADA (crea sesión + primer intervalo)
 // ------------------------------------------------------------
 func (s *Service) StartSession(userID string) (*WorkSession, error) {
-	// ¿Ya hay una jornada abierta?
 	open, err := s.repo.GetActiveSession(userID)
 	if err == nil && open != nil {
 		return nil, ErrSessionAlreadyOpen
@@ -48,8 +47,8 @@ func (s *Service) StartSession(userID string) (*WorkSession, error) {
 		return nil, err
 	}
 
-	// Crear primer intervalo
-	if _, err := s.intervalSvc.StartInterval(session.ID); err != nil {
+	_, err = s.intervalSvc.StartInterval(session.ID)
+	if err != nil {
 		return nil, err
 	}
 
@@ -57,7 +56,7 @@ func (s *Service) StartSession(userID string) (*WorkSession, error) {
 }
 
 // ------------------------------------------------------------
-// CREAR SESIÓN MANUAL (no afecta a intervalos)
+// CREAR SESIÓN MANUAL
 // ------------------------------------------------------------
 func (s *Service) CreateManualSession(userID string, date time.Time, start, end time.Time) (*WorkSession, error) {
 	if !end.After(start) {
@@ -82,7 +81,7 @@ func (s *Service) CreateManualSession(userID string, date time.Time, start, end 
 }
 
 // ------------------------------------------------------------
-// FINALIZAR JORNADA (cierra intervalo activo + cierra sesión)
+// FINALIZAR JORNADA
 // ------------------------------------------------------------
 func (s *Service) EndSession(userID string) (*WorkSession, error) {
 	session, err := s.repo.GetActiveSession(userID)
@@ -92,10 +91,8 @@ func (s *Service) EndSession(userID string) (*WorkSession, error) {
 
 	now := time.Now()
 
-	// Cerrar intervalo activo
 	_, _ = s.intervalSvc.CloseActiveInterval(session.ID)
 
-	// Cerrar jornada
 	if err := s.repo.CloseSession(session.ID, now); err != nil {
 		return nil, err
 	}
@@ -106,6 +103,14 @@ func (s *Service) EndSession(userID string) (*WorkSession, error) {
 	return session, nil
 }
 
+func (s *Service) PauseInterval(sessionID uint) (*intervals.WorkInterval, error) {
+	return s.intervalSvc.CloseActiveInterval(sessionID)
+}
+
+func (s *Service) ResumeInterval(sessionID uint) (*intervals.WorkInterval, error) {
+	return s.intervalSvc.StartInterval(sessionID)
+}
+
 // ------------------------------------------------------------
 // CONSULTAS
 // ------------------------------------------------------------
@@ -113,21 +118,14 @@ func (s *Service) GetUserSessions(userID string) ([]WorkSession, error) {
 	return s.repo.GetByUser(userID)
 }
 
-func (s *Service) GetSessionsForAdmin(userID string) ([]WorkSession, error) {
-	return s.repo.GetByUser(userID)
-}
-
 func (s *Service) GetAllSessions() ([]WorkSession, error) {
-	return s.repo.GetAllSessions()
-}
-
-func (s *Service) GetAdminSessions(userID string) ([]WorkSession, error) {
-	if userID != "" {
-		return s.repo.GetSessionsByUser(userID)
-	}
 	return s.repo.GetAllSessions()
 }
 
 func (s *Service) GetActiveSession(userID string) (*WorkSession, error) {
 	return s.repo.GetActiveSession(userID)
+}
+
+func (s *Service) GetSessionByID(id uint) (*WorkSession, error) {
+	return s.repo.GetByID(id)
 }

@@ -40,14 +40,17 @@ func main() {
 	// Repos + servicios + handlers
 	firebaseApp := auth.FirebaseApp
 	userRepo := users.NewRepository(db)
+
 	sessionRepo := sessions.NewRepository(db)
 	intervalRepo := intervals.NewRepository(db)
-	intervalService := intervals.NewService(intervalRepo)
 
+	intervalService := intervals.NewService(intervalRepo)
 	sessionService := sessions.NewService(*sessionRepo, intervalService)
+
 	sessionHandler := sessions.NewHandler(sessionService)
 
-	r := router.NewRouter(sessionHandler, userRepo, firebaseApp)
+	// 🔥 Router corregido: ahora recibe sessionService también
+	r := router.NewRouter(sessionHandler, sessionService, userRepo, firebaseApp)
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173"},
